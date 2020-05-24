@@ -1,4 +1,5 @@
-const staticCacheName = 'site-static-v2';
+const staticCacheName = 'site-static-v3';
+const dynamicCache = 'site-dynamic-v1';
 const assets = [
     '/',
     '/index.html',
@@ -11,7 +12,7 @@ const assets = [
     'https://fonts.googleapis.com/icon?family=Material+Icons'
 ];
 
-// Install Service Worker
+// Install Service Worker / /
 self.addEventListener('install', e => {
     e.waitUntil(
         caches.open(staticCacheName).then(cache => {
@@ -37,7 +38,12 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
     e.respondWith(
         caches.match(e.request).then(cacheResponse => {
-            return cacheResponse || fetch(e.request);
+            return cacheResponse || fetch(e.request).then(fetchResponse => {
+                return caches.open(dynamicCache).then(cache => {
+                    cache.put(e.request.url, fetchResponse.clone());
+                    return fetchResponse;
+                })
+            })
         })
     );
 });
