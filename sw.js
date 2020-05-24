@@ -13,7 +13,20 @@ const assets = [
     '/pages/fallback.html'
 ];
 
-// Install Service Worker / /
+// cache size limit function ///
+const limitCacheSize = (name, size) => {
+    caches.open(name).then(cache => {
+        cache.keys().then(keys => {
+            console.log(keys.length);
+            if (keys.length > size) {
+                cache.delete(keys[0]).then(limitCacheSize(name, size));
+            }
+        });
+    });
+}
+
+
+// Install Service Worker / 
 self.addEventListener('install', e => {
     e.waitUntil(
         caches.open(staticCacheName).then(cache => {
@@ -42,6 +55,7 @@ self.addEventListener('fetch', e => {
             return cacheResponse || fetch(e.request).then(fetchResponse => {
                 return caches.open(dynamicCacheName).then(cache => {
                     cache.put(e.request.url, fetchResponse.clone());
+                    limitCacheSize(dynamicCacheName, 20);
                     return fetchResponse;
                 })
             })
