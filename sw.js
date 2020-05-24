@@ -1,5 +1,5 @@
 const staticCacheName = 'site-static-v3';
-const dynamicCache = 'site-dynamic-v1';
+const dynamicCacheName = 'site-dynamic-v1';
 const assets = [
     '/',
     '/index.html',
@@ -9,7 +9,8 @@ const assets = [
     '/css/styles.css',
     '/css/materialize.min.css',
     '/img/dish.png',
-    'https://fonts.googleapis.com/icon?family=Material+Icons'
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    '/pages/fallback.html'
 ];
 
 // Install Service Worker / /
@@ -27,7 +28,7 @@ self.addEventListener('activate', e => {
     e.waitUntil(
         caches.keys().then(keys => {
             return Promise.all(keys
-                .filter(key => key !== staticCacheName)
+                .filter(key => key !== staticCacheName && key !== dynamicCacheName)
                 .map(key => caches.delete(key))
             );
         })
@@ -39,11 +40,11 @@ self.addEventListener('fetch', e => {
     e.respondWith(
         caches.match(e.request).then(cacheResponse => {
             return cacheResponse || fetch(e.request).then(fetchResponse => {
-                return caches.open(dynamicCache).then(cache => {
+                return caches.open(dynamicCacheName).then(cache => {
                     cache.put(e.request.url, fetchResponse.clone());
                     return fetchResponse;
                 })
             })
-        })
+        }).catch(() => caches.match('/pages/fallback.html'))
     );
 });
