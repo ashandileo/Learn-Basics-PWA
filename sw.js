@@ -50,15 +50,15 @@ self.addEventListener('activate', e => {
 
 // Fetch Events
 self.addEventListener('fetch', e => {
-    e.respondWith(
-        caches.match(e.request).then(cacheResponse => {
-            return cacheResponse || fetch(e.request).then(fetchResponse => {
-                return caches.open(dynamicCacheName).then(cache => {
-                    cache.put(e.request.url, fetchResponse.clone());
-                    limitCacheSize(dynamicCacheName, 20);
-                    return fetchResponse;
-                })
-            })
-        }).catch(() => caches.match('/pages/fallback.html'))
-    );
+    // e.respondWith(
+    //     caches.match(e.request).then(cacheResponse => {
+    //         return cacheResponse || fetch(e.request).then(fetchResponse => {
+    //             return caches.open(dynamicCacheName).then(cache => {
+    //                 cache.put(e.request.url, fetchResponse.clone());
+    //                 limitCacheSize(dynamicCacheName, 20);
+    //                 return fetchResponse;
+    //             })
+    //         })
+    //     }).catch(() => caches.match('/pages/fallback.html'))
+    // );
 });
