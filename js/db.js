@@ -49,7 +49,6 @@ const recipeContainer = document.querySelector('.recipes');
 
 recipeContainer.addEventListener('click', e => {
     if(e.target.tagName === 'I') {
-        alert('click');
        const id = e.target.getAttribute('data-id');
 
        db.collection('recipes').doc(id).delete();
