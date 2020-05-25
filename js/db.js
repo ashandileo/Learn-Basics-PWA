@@ -20,7 +20,8 @@ db.collection('recipes').onSnapshot((snapshot) => {
         }
 
         if(change.type === 'removed') {
-            // remove the document data from the web p age
+            // remove the document data from the web page
+            removeRecipe(change.doc.id); 
         }
     })
 });
@@ -42,3 +43,15 @@ form.addEventListener('submit', e => {
    form.title.value = '';
    form.ingredients.value = '';
 }) 
+
+// Delete Recipe
+const recipeContainer = document.querySelector('.recipes');
+
+recipeContainer.addEventListener('click', e => {
+    if(e.target.tagName === 'I') {
+        alert('click');
+       const id = e.target.getAttribute('data-id');
+
+       db.collection('recipes').doc(id).delete();
+    }
+}); 
